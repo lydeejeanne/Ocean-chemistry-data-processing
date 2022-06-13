@@ -111,7 +111,7 @@ r = ggplot(data_sub2, aes(x=yyyymmdd, y=TOCTOP_mean))+
                     ymax=TOCTOP_mean+TOCTOP_sd), width=.2,
                 position = position_dodge(0.05))
 
-ggplot(data_sub2, aes(yyyymmdd))+
+m = ggplot(data_sub2, aes(yyyymmdd))+
   geom_point(aes(y=TOCTOP_mean, color="TOC:TOP"),shape=1, size=2)+
   geom_errorbar(aes(ymin=TOCTOP_mean-TOCTOP_sd,
                     ymax=TOCTOP_mean+TOCTOP_sd, color="TOC:TOP"), width=.2)+
@@ -121,6 +121,9 @@ ggplot(data_sub2, aes(yyyymmdd))+
   labs(x = "Year",
        y = "TOC:TOP & POC:POP",
        color="Legend")
+
+plot(r)
+plot(m)
 ```
 
 # Figure 4C
