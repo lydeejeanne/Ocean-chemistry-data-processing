@@ -5,11 +5,7 @@ date: "6/13/2022"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-## Ocean Chemistry
+## BATs ocean chemistry processing
 Ocean-chemistry-data-processing; a continuation of the data processed in doi:10.5194/bg-12-6389-2015 with additional data publically available from the Bermuda Atlantic Time Series <http://bats.bios.edu/bats-data/>.This tutorial was used in the "Data Management and Representation" graduate course in Marine Ecology and Biology Department at the Rosenstiel School of Marine and Atmospheric Science. 
 
 
@@ -19,7 +15,7 @@ library(ggplot2)
 library(reshape2)
 ```
 
-## Upload and clean the data
+# Upload and clean the data
 
 Need to turn -999 to NA so as not to confuse the data processing
 Also want to subset to work with data just above the mixed layer
@@ -30,7 +26,7 @@ data[data==-999]=NA
 data_sub=subset(data,yyyymmdd>=20040000 & Depth<=25)
 ```
 
-#Calculate TOP and TON
+# Calculate TOP and TON
 TOP and TON are not given from the data, so they need to be calculated from the data provided.Will need to  convert because phosphorus is in nmol/kg.
 
 ```{r}
@@ -38,21 +34,21 @@ data_sub$TOP = (data_sub$TDP-data_sub$SRP)*0.001
 data_sub$TON = data_sub$TN - data_sub$NO31
 ```
 
-#Calculate ratios
+# Calculate ratios
 Only calculating TOC:TON and POC:PON, but similar data is presented in Figure 2 of the original paper, but this year continues data into present 
 ```{r}
 data_sub$TOC_TON =data_sub$TOC/data_sub$TON
 data_sub$POC_PON = data_sub$POC/data_sub$PON
 ```
 
-#Have R recognize the date format
+# Have R recognize the date format
 Else each of the numbers are going to be scaled as if they were true numbers (for example 20161203 instead of December 3, 2016)
 ```{r}
 data_sub$yyyymmdd= as.Date(as.character(data_sub$yyyymmdd), format="%Y%m%d")
 ```
 
-##Averages and SDs for TOCTON and POCPON
-Need to get the averages for these to recreate Figure 2
+# Averages and SDs for TOCTON and POCPON
+Need to get the averages and standard deviations for these to recreate Figure 2
 ```{r}
 data_sub1= data_sub %>%
   group_by(yyyymmdd) %>%
@@ -62,8 +58,8 @@ data_sub1= data_sub %>%
             POCPON_sd=sd(POCPON, na.rm = TRUE))
 ```
 
-#Plot TOCTON data
-Recreating a part of Figure 2a
+#Plot TOC:TON data
+Recreating data presented in Figure 2a but with more years of data 
 ```{r}
 p = ggplot(data_sub1, aes(yyyymmdd))+
   geom_point(aes(y=TOCTON_mean, color="TOC:TON"),shape=1, size=2)+
@@ -81,17 +77,19 @@ p = ggplot(data_sub1, aes(yyyymmdd))+
 plot(p)
 ```
 
-##To create a boxplot similar to the data presented in Figure 4
+##Figure 4
+To create a boxplot similar to the data presented in Figure 4 but with more years of data
 ```{r}
 q=ggplot(data_sub, aes(x=month, y=TOC))+
-  geom_boxplot()+
+  geom_boxplot() + 
   labs(x = "Month",
-       y = "TOC (?mol/kg)")
+       y = "TOC (umol/kg)") + 
+   theme(axis.text.x = element_text(angle=90, hjust=1))
 ```
 
 ```{r, echo=FALSE}
 plot(q)
-
+```
 
 ##Replicating Figure 2b
 ```{r}
@@ -106,7 +104,7 @@ data_sub2= data_sub %>%
             POCPOP_sd=sd(POCPOP, na.rm = TRUE))
 
 
-ggplot(data_sub2, aes(x=yyyymmdd, y=TOCTOP_mean))+
+r = ggplot(data_sub2, aes(x=yyyymmdd, y=TOCTOP_mean))+
   geom_point()+
   geom_errorbar(aes(ymin=TOCTOP_mean-TOCTOP_sd,
                     ymax=TOCTOP_mean+TOCTOP_sd), width=.2,
@@ -124,16 +122,15 @@ ggplot(data_sub2, aes(yyyymmdd))+
        color="Legend")
 ```
 
-##Replicating Figure 4c
+# Figure 4C
+Recreating data presented in Figure 4C but with more data 
 ```{r}
-b=ggplot(data_sub, aes(x=month, y=TON))+
-  geom_boxplot()
-b
-
 b=ggplot(data_sub, aes(x=month, y=TON))+
   geom_boxplot()+
   labs(x = "Month",
-     y = "TON (?mol/kg)")
+     y = "TON (umol/kg)")+ 
+  theme(axis.text.x = element_text(angle=90, hjust=1))
+
 b
 ```
 
