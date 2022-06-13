@@ -135,6 +135,6 @@ b=ggplot(data_sub, aes(x=month, y=TON))+
      y = "TON (umol/kg)")+ 
   theme(axis.text.x = element_text(angle=90, hjust=1))
 
-b
+plot(b)
 ```
 
